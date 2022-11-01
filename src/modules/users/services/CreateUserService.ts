@@ -1,21 +1,14 @@
 import { inject, injectable } from 'tsyringe';
-import path from 'path';
 
-import { Users } from '@prisma/client';
+import { User } from '@prisma/client';
 
 import AppError from '@shared/errors/AppError';
 
 import IHashProvider from '@shared/container/providers/HashProvider/models/IHashProvider';
-import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
+import ICreateUserDTO from '../dtos/ICreateUserDTO';
 
-interface IRequest {
-  name: string;
-  email: string;
-  cpf: string;
-  phone: string;
-  password: string;
-}
+type IRequest = ICreateUserDTO;
 
 @injectable()
 export default class CreateUserService {
@@ -25,42 +18,39 @@ export default class CreateUserService {
 
     @inject('HashProvider')
     private hashProvider: IHashProvider,
-
-    @inject('MailProvider')
-    private mailProvider: IMailProvider,
   ) { }
 
   public async execute({
-    cpf, email, name, password, phone,
-  }: IRequest): Promise<Users> {
-    const userAlreadyExists = await this.usersRepository.findByEmailPhoneOrCpf(email, phone, cpf);
+    username,
+    email,
+    password,
+    firstName,
+    lastName,
+    birthDate,
+    about,
+    avatar,
+  }: IRequest): Promise<Omit<User, 'password'>> {
+    const userWithSameUsername = await this.usersRepository.findByUsername(username);
 
-    if (userAlreadyExists) throw new AppError('User with same name, phone or cpf already exists');
+    if (userWithSameUsername) throw new AppError('User with same username already exists');
+
+    const userWithSameEmail = await this.usersRepository.findByEmail(email);
+
+    if (userWithSameEmail) throw new AppError('User with same email already exists');
 
     const hashedPassword = await this.hashProvider.generateHash(password);
 
-    const user = this.usersRepository.create({
-      name,
-      email: email.toLowerCase(),
-      cpf,
+    const { password: _, ...userWithoutPassword } = await this.usersRepository.create({
+      username,
+      email,
       password: hashedPassword,
-      phone,
+      firstName,
+      lastName,
+      birthDate,
+      about,
+      avatar,
     });
 
-    const templateDataFile = path.resolve(__dirname, '..', 'views', 'create_account.hbs');
-
-    await this.mailProvider.sendMail({
-      to: {
-        name,
-        email,
-      },
-      subject: 'Criação de conta',
-      templateData: {
-        file: templateDataFile,
-        variables: { name },
-      },
-    });
-
-    return user;
+    return userWithoutPassword;
   }
 }
