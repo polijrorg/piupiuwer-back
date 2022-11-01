@@ -3,7 +3,7 @@ import UnfollowUserService from '@modules/users/services/UnfollowUserService';
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 
-export default class FollowController {
+export default class FollowsController {
   public async follow(req: Request, res: Response): Promise<Response> {
     const {
       followingId,

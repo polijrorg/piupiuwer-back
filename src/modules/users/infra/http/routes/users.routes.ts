@@ -5,7 +5,8 @@ import { param } from 'express-validator';
 import UserController from '../controller/UsersController';
 
 import registerSchema from '../schemas/registerSchema';
-import followRoutes from './follow.routes';
+import favoritesRoutes from './favorites.routes';
+import followsRoutes from './follow.routes';
 
 const usersRoutes = Router();
 
@@ -24,6 +25,8 @@ usersRoutes.get('/:id',
   param('id').isUUID(),
   userController.findById);
 
-usersRoutes.use('/', followRoutes);
+usersRoutes.use('/', followsRoutes);
+
+usersRoutes.use('/', favoritesRoutes);
 
 export default usersRoutes;

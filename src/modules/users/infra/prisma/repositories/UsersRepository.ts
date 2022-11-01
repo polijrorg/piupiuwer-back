@@ -4,6 +4,7 @@ import { Prisma, User } from '@prisma/client';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IFollowUserDTO from '@modules/users/dtos/IFollowUserDTO';
+import IFavoritePiuDTO from '@modules/users/dtos/IFavoritePiuDTO';
 
 export default class UsersRepository implements IUsersRepository {
   private ormRepository: Prisma.UserDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>
@@ -74,6 +75,36 @@ export default class UsersRepository implements IUsersRepository {
       include: {
         followedBy: true,
         following: true,
+      },
+    });
+
+    return user;
+  }
+
+  public async favorite({ userId, id }: IFavoritePiuDTO): Promise<User> {
+    const user = await this.ormRepository.update({
+      where: { id: userId },
+      data: {
+        favorites: {
+          create: {
+            piuId: id,
+          },
+        },
+      },
+    });
+
+    return user;
+  }
+
+  public async unfavorite({ userId, id }: IFavoritePiuDTO): Promise<User> {
+    const user = await this.ormRepository.update({
+      where: { id: userId },
+      data: {
+        favorites: {
+          delete: {
+            favoriteId: { userId, piuId: id },
+          },
+        },
       },
     });
 

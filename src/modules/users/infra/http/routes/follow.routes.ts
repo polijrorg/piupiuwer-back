@@ -1,14 +1,14 @@
 import validateRequestSchema from '@shared/infra/http/middleware/validateRequestSchema';
 import { Router } from 'express';
 import { param } from 'express-validator';
-import FollowController from '../controller/FollowController';
+import FollowsController from '../controller/FollowsController';
 
-const followRoutes = Router();
+const followsRoutes = Router();
 
-const followController = new FollowController();
+const followsController = new FollowsController();
 
-followRoutes.patch('/follow/:followingId', param('followingId').isUUID(), validateRequestSchema, followController.follow);
+followsRoutes.patch('/follow/:followingId', param('followingId').isUUID(), validateRequestSchema, followsController.follow);
 
-followRoutes.patch('/unfollow/:followingId', param('followingId').isUUID(), validateRequestSchema, followController.unfollow);
+followsRoutes.patch('/unfollow/:followingId', param('followingId').isUUID(), validateRequestSchema, followsController.unfollow);
 
-export default followRoutes;
+export default followsRoutes;

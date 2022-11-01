@@ -9,7 +9,8 @@ model User {
   about      String?
   avatar     String?
   pius       Piu[]
-  favorite   Favorite[]
+  likes      PiuLike[]
+  favorites  Favorite[]
   following  Follows[]  @relation("follower")
   followedBy Follows[]  @relation("following")
   created_at DateTime   @default(now())
@@ -19,10 +20,21 @@ model User {
 }
 
 model Piu {
-  id       String     @id @default(uuid())
-  user_id  String
-  user     User       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Favorite Favorite[]
+  id        String     @id @default(uuid())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId   String
+  favorites Favorite[]
+  likes     PiuLike[]
+}
+
+model PiuLike {
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  piu     Piu    @relation(fields: [piuId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  piuId  String
+
+  @@unique(fields: [userId, piuId], name: "likeId")
+  @@map("likes")
 }
 
 model Follows {
@@ -36,11 +48,11 @@ model Follows {
 }
 
 model Favorite {
-  id      String @id @default(uuid())
-  user_id String
-  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  piu_id  String
-  piu     Piu    @relation(fields: [piu_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  piuId  String
+  piu     Piu    @relation(fields: [piuId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  @@unique(fields: [userId, piuId], name: "favoriteId")
   @@map("favorites")
 }
