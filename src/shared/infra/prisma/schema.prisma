@@ -9,12 +9,14 @@ generator client {
 }
 
 model Piu {
-  id        String     @id @default(uuid())
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    String
-  favorites Favorite[]
-  likes     PiuLike[]
-  text      String
+  id         String     @id @default(uuid())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId     String
+  favorites  Favorite[]
+  likes      PiuLike[]
+  text       String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
 
   @@map("pius")
 }

@@ -12,6 +12,7 @@ import '@shared/container';
 import AppError from '@shared/errors/AppError';
 
 import morgan from 'morgan';
+import path from 'path';
 import routes from './routes';
 
 const app = express();
@@ -19,6 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/docs', express.static(path.join(__dirname, '..', '..', '..', '..', 'docs')));
 app.use(morgan('dev'));
 app.use(routes);
 

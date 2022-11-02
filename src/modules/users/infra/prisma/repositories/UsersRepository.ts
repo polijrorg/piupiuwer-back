@@ -15,19 +15,46 @@ export default class UsersRepository implements IUsersRepository {
   }
 
   public async create(data: ICreateUserDTO): Promise<User> {
-    const user = await this.ormRepository.create({ data });
+    const user = await this.ormRepository.create({
+      data,
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
+      },
+    });
 
     return user;
   }
 
   public async findByUsername(username: string): Promise<User | null> {
-    const user = await this.ormRepository.findUnique({ where: { username } });
+    const user = await this.ormRepository.findUnique({
+      where: { username },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
+      },
+    });
 
     return user;
   }
 
   public async findByEmail(email: string): Promise<User | null> {
-    const user = await this.ormRepository.findUnique({ where: { email } });
+    const user = await this.ormRepository.findUnique({
+      where: { email },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
+      },
+    });
 
     return user;
   }
@@ -39,7 +66,16 @@ export default class UsersRepository implements IUsersRepository {
   }
 
   public async findById(id: string): Promise<User | null> {
-    const user = await this.ormRepository.findUnique({ where: { id } });
+    const user = await this.ormRepository.findUnique({
+      where: { id },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
+      },
+    });
 
     return user;
   }
@@ -49,6 +85,13 @@ export default class UsersRepository implements IUsersRepository {
       where: { id: userId },
       data: {
         ...userData,
+      },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
       },
     });
 
@@ -70,6 +113,9 @@ export default class UsersRepository implements IUsersRepository {
         },
       },
       include: {
+        pius: true,
+        likes: true,
+        favorites: true,
         followedBy: true,
         following: true,
       },
@@ -89,6 +135,9 @@ export default class UsersRepository implements IUsersRepository {
         },
       },
       include: {
+        pius: true,
+        likes: true,
+        favorites: true,
         followedBy: true,
         following: true,
       },
@@ -107,6 +156,13 @@ export default class UsersRepository implements IUsersRepository {
           },
         },
       },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
+      },
     });
 
     return user;
@@ -121,6 +177,13 @@ export default class UsersRepository implements IUsersRepository {
             favoriteId: { userId, piuId: id },
           },
         },
+      },
+      include: {
+        pius: true,
+        likes: true,
+        favorites: true,
+        followedBy: true,
+        following: true,
       },
     });
 

@@ -24,7 +24,7 @@ export default class AuthenticateUserService {
     private hashProvider: IHashProvider,
   ) { }
 
-  public async execute({ email, password }: IRequest): Promise<{ user: User, token: string }> {
+  public async execute({ email, password }: IRequest): Promise<{ user: Omit<User, 'password'>, token: string }> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
@@ -44,8 +44,10 @@ export default class AuthenticateUserService {
       expiresIn,
     });
 
+    const { password: _, ...userWithoutPassword } = user;
+
     return {
-      user,
+      user: userWithoutPassword,
       token,
     };
   }

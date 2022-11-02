@@ -16,19 +16,26 @@ export default class PiusRepository implements IPiusRepository {
   public async create(data: ICreatePiuDTO): Promise<Piu> {
     const piu = await this.ormRepository.create({
       data,
+      include: {
+        likes: true,
+      },
     });
 
     return piu;
   }
 
   public async list(): Promise<Piu[]> {
-    const pius = await this.ormRepository.findMany();
+    const pius = await this.ormRepository.findMany({
+      include: {
+        likes: true,
+      },
+    });
 
     return pius;
   }
 
   public async findById(id: string): Promise<Piu | null> {
-    const piu = await this.ormRepository.findUnique({ where: { id }, include: { favorites: true, likes: true } });
+    const piu = await this.ormRepository.findUnique({ where: { id }, include: { likes: true } });
 
     return piu;
   }
@@ -37,9 +44,10 @@ export default class PiusRepository implements IPiusRepository {
     const piu = await this.ormRepository.update({
       where: { id: piuId },
       data: { text },
+      include: {
+        likes: true,
+      },
     });
-
-    console.log(piu);
 
     return piu;
   }
