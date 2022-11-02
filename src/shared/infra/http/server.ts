@@ -20,7 +20,7 @@ import routes from './routes';
 const app = express();
 
 app.use(cors());
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/docsSwagger', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { Secret, verify } from 'jsonwebtoken';
 import AppError from '@shared/errors/AppError';
+import FindUserByIdService from '@modules/users/services/FindUserByIdService';
+import { container } from 'tsyringe';
 import authConfig from '../../../../config/auth';
 
 interface ITokenPayload {
@@ -10,11 +12,11 @@ interface ITokenPayload {
   iss: string;
 }
 
-export default function ensureAuthenticated(
+export default async function ensureAuthenticated(
   request: Request,
   _: Response,
   next: NextFunction,
-): void {
+): Promise<void> {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) throw new AppError('JWT token is missing', 401);
@@ -24,14 +26,20 @@ export default function ensureAuthenticated(
   try {
     const decoded = verify(token, authConfig.jwt.secret as Secret);
 
-    const { sub } = decoded as ITokenPayload;
+    const { sub: id } = decoded as ITokenPayload;
+
+    const findUserById = container.resolve(FindUserByIdService);
+
+    const user = await findUserById.execute({ id });
+
+    if (!user) throw new AppError('');
 
     request.user = {
-      id: sub,
+      id,
     };
 
     return next();
-  } catch {
-    throw new AppError('JWT token is missing', 401);
+  } catch (e) {
+    throw new AppError(e ? 'This user was deleted' : 'JWT token is missing', 401);
   }
 }

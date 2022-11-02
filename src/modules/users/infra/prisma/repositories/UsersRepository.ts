@@ -5,6 +5,7 @@ import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IFollowUserDTO from '@modules/users/dtos/IFollowUserDTO';
 import IFavoritePiuDTO from '@modules/users/dtos/IFavoritePiuDTO';
+import IUpdateUserDTO from '@modules/users/dtos/IUpdateUserDTO';
 
 export default class UsersRepository implements IUsersRepository {
   private ormRepository: Prisma.UserDelegate<Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined>
@@ -41,6 +42,21 @@ export default class UsersRepository implements IUsersRepository {
     const user = await this.ormRepository.findUnique({ where: { id } });
 
     return user;
+  }
+
+  public async update({ user: userData, userId }: IUpdateUserDTO): Promise<User> {
+    const user = await this.ormRepository.update({
+      where: { id: userId },
+      data: {
+        ...userData,
+      },
+    });
+
+    return user;
+  }
+
+  public async delete(id: string): Promise<void> {
+    await this.ormRepository.delete({ where: { id } });
   }
 
   public async follow({ followerId, followingId }: IFollowUserDTO): Promise<User> {

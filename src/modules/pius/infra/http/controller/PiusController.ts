@@ -6,6 +6,7 @@ import ListPiusService from '@modules/pius/services/ListPiusService';
 import FindPiuByIdService from '@modules/pius/services/FindPiuByIdService';
 import DeletePiuService from '@modules/pius/services/DeletePiuService';
 import ToggleLikePiuService from '@modules/pius/services/ToggleLikePiuService';
+import UpdatePiuService from '@modules/pius/services/UpdatePiuService';
 
 export default class PiusController {
   public async create(req: Request, res: Response): Promise<Response> {
@@ -37,6 +38,20 @@ export default class PiusController {
     const findPiuById = container.resolve(FindPiuByIdService);
 
     const piu = await findPiuById.execute({ id });
+
+    return res.status(200).json(piu);
+  }
+
+  public async update(req: Request, res: Response): Promise<Response> {
+    const {
+      text,
+    } = req.body;
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const updatePiu = container.resolve(UpdatePiuService);
+
+    const piu = await updatePiu.execute({ piuId: id, piu: { text, userId } });
 
     return res.status(200).json(piu);
   }

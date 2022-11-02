@@ -20,6 +20,8 @@ export default class FollowUserService {
   ) { }
 
   public async execute({ followerId, followingId } : IRequest): Promise<Omit<User, 'password'>> {
+    if (followerId === followingId) throw new AppError('You can not follow yourself');
+
     const followingUser = await this.usersRepository.findById(followingId);
 
     if (!followingUser) throw new AppError('User to be followed not found', 404);

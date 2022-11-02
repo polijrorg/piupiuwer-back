@@ -23,6 +23,12 @@ piusRoutes.get('/:id',
   validateRequestSchema,
   piuController.findById);
 
+piusRoutes.put('/:id',
+  param('id').isUUID(),
+  createPiuSchema,
+  validateRequestSchema,
+  piuController.update);
+
 piusRoutes.delete('/:id',
   param('id').isUUID(),
   validateRequestSchema,

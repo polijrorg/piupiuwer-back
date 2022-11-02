@@ -25,6 +25,13 @@ usersRoutes.get('/:id',
   param('id').isUUID(),
   userController.findById);
 
+usersRoutes.put('/',
+  registerSchema,
+  validateRequestSchema,
+  userController.update);
+
+usersRoutes.delete('/', userController.delete);
+
 usersRoutes.use('/', followsRoutes);
 
 usersRoutes.use('/', favoritesRoutes);
