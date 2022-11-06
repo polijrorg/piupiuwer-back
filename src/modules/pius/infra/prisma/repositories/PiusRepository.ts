@@ -18,6 +18,7 @@ export default class PiusRepository implements IPiusRepository {
       data,
       include: {
         likes: true,
+        user: true,
       },
     });
 
@@ -28,6 +29,7 @@ export default class PiusRepository implements IPiusRepository {
     const pius = await this.ormRepository.findMany({
       include: {
         likes: true,
+        user: true,
       },
     });
 
@@ -46,6 +48,7 @@ export default class PiusRepository implements IPiusRepository {
       data: { text },
       include: {
         likes: true,
+        user: true,
       },
     });
 
@@ -68,6 +71,7 @@ export default class PiusRepository implements IPiusRepository {
       },
       include: {
         likes: true,
+        user: true,
       },
     });
 
@@ -86,6 +90,7 @@ export default class PiusRepository implements IPiusRepository {
       },
       include: {
         likes: true,
+        user: true,
       },
     });
 
