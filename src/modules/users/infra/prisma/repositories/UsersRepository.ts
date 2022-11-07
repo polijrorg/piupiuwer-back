@@ -1,5 +1,7 @@
 import prisma from '@shared/infra/prisma/client';
-import { Prisma, User } from '@prisma/client';
+import {
+  Favorite, Follows, Piu, PiuLike, Prisma, User,
+} from '@prisma/client';
 
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
@@ -14,7 +16,13 @@ export default class UsersRepository implements IUsersRepository {
     this.ormRepository = prisma.user;
   }
 
-  public async create(data: ICreateUserDTO): Promise<User> {
+  public async create(data: ICreateUserDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.create({
       data,
       include: {
@@ -29,7 +37,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async findByUsername(username: string): Promise<User | null> {
+  public async findByUsername(username: string): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  }) | null> {
     const user = await this.ormRepository.findUnique({
       where: { username },
       include: {
@@ -44,7 +58,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async findByEmail(email: string): Promise<User | null> {
+  public async findByEmail(email: string): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  }) | null> {
     const user = await this.ormRepository.findUnique({
       where: { email },
       include: {
@@ -65,7 +85,13 @@ export default class UsersRepository implements IUsersRepository {
     return users;
   }
 
-  public async findById(id: string): Promise<User | null> {
+  public async findById(id: string): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  }) | null> {
     const user = await this.ormRepository.findUnique({
       where: { id },
       include: {
@@ -80,7 +106,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async update({ user: userData, userId }: IUpdateUserDTO): Promise<User> {
+  public async update({ user: userData, userId }: IUpdateUserDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.update({
       where: { id: userId },
       data: {
@@ -102,7 +134,13 @@ export default class UsersRepository implements IUsersRepository {
     await this.ormRepository.delete({ where: { id } });
   }
 
-  public async follow({ followerId, followingId }: IFollowUserDTO): Promise<User> {
+  public async follow({ followerId, followingId }: IFollowUserDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.update({
       where: { id: followerId },
       data: {
@@ -124,7 +162,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async unfollow({ followerId, followingId }: IFollowUserDTO): Promise<User> {
+  public async unfollow({ followerId, followingId }: IFollowUserDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.update({
       where: { id: followerId },
       data: {
@@ -146,7 +190,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async favorite({ userId, id }: IFavoritePiuDTO): Promise<User> {
+  public async favorite({ userId, id }: IFavoritePiuDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.update({
       where: { id: userId },
       data: {
@@ -168,7 +218,13 @@ export default class UsersRepository implements IUsersRepository {
     return user;
   }
 
-  public async unfavorite({ userId, id }: IFavoritePiuDTO): Promise<User> {
+  public async unfavorite({ userId, id }: IFavoritePiuDTO): Promise<(User & {
+    pius: Piu[],
+    likes: PiuLike[],
+    favorites: Favorite[],
+    followedBy: Follows[],
+    following: Follows[]
+  })> {
     const user = await this.ormRepository.update({
       where: { id: userId },
       data: {
