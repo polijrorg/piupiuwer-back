@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 
-import { Piu } from '@prisma/client';
+import { Piu, PiuLike, User } from '@prisma/client';
 
 import AppError from '@shared/errors/AppError';
 import IPiusRepository from '../repositories/IPiusRepository';
@@ -20,7 +20,10 @@ export default class UpdatePiuService {
     private piusRepository: IPiusRepository,
   ) { }
 
-  public async execute({ piuId, piu: { text, userId } }: IRequest): Promise<Piu> {
+  public async execute({ piuId, piu: { text, userId } }: IRequest): Promise<(Piu & {
+    user: Omit<User, 'password'>;
+    likes: PiuLike[];
+  })> {
     const piu = await this.piusRepository.findById(piuId);
 
     if (!piu) throw new AppError('Piu not found', 404);
@@ -31,6 +34,8 @@ export default class UpdatePiuService {
       piuId, text,
     });
 
-    return updatedPiu;
+    const { user: { password: _, ...userWithoutPassword }, ...piuWithoutUser } = updatedPiu;
+
+    return { ...piuWithoutUser, user: userWithoutPassword };
   }
 }

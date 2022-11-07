@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 
-import { Piu } from '@prisma/client';
+import { Piu, PiuLike, User } from '@prisma/client';
 
 import ICreatePiuDTO from '../dtos/ICreatePiuDTO';
 import IPiusRepository from '../repositories/IPiusRepository';
@@ -17,12 +17,15 @@ export default class CreatePiuService {
   public async execute({
     text,
     userId,
-  }: IRequest): Promise<Piu> {
-    const piu = await this.piusRepository.create({
+  }: IRequest): Promise<(Piu & {
+    user: Omit<User, 'password'>;
+    likes: PiuLike[];
+  })> {
+    const { user: { password: _, ...userWithoutPassword }, ...piuWithoutUser } = await this.piusRepository.create({
       text,
       userId,
     });
 
-    return piu;
+    return { ...piuWithoutUser, user: userWithoutPassword };
   }
 }

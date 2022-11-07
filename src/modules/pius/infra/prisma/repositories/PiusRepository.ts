@@ -1,5 +1,7 @@
 import prisma from '@shared/infra/prisma/client';
-import { Prisma, Piu } from '@prisma/client';
+import {
+  Prisma, Piu, User, PiuLike,
+} from '@prisma/client';
 
 import IPiusRepository from '@modules/pius/repositories/IPiusRepository';
 import ICreatePiuDTO from '@modules/pius/dtos/ICreatePiuDTO';
@@ -13,7 +15,10 @@ export default class PiusRepository implements IPiusRepository {
     this.ormRepository = prisma.piu;
   }
 
-  public async create(data: ICreatePiuDTO): Promise<Piu> {
+  public async create(data: ICreatePiuDTO): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  })> {
     const piu = await this.ormRepository.create({
       data,
       include: {
@@ -25,7 +30,10 @@ export default class PiusRepository implements IPiusRepository {
     return piu;
   }
 
-  public async list(): Promise<Piu[]> {
+  public async list(): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  })[]> {
     const pius = await this.ormRepository.findMany({
       include: {
         likes: true,
@@ -36,13 +44,25 @@ export default class PiusRepository implements IPiusRepository {
     return pius;
   }
 
-  public async findById(id: string): Promise<Piu | null> {
-    const piu = await this.ormRepository.findUnique({ where: { id }, include: { likes: true } });
+  public async findById(id: string): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  }) | null> {
+    const piu = await this.ormRepository.findUnique({
+      where: { id },
+      include: {
+        likes: true,
+        user: true,
+      },
+    });
 
     return piu;
   }
 
-  public async update({ text, piuId }: IUpdatePiuDTO): Promise<Piu> {
+  public async update({ text, piuId }: IUpdatePiuDTO): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  })> {
     const piu = await this.ormRepository.update({
       where: { id: piuId },
       data: { text },
@@ -59,7 +79,10 @@ export default class PiusRepository implements IPiusRepository {
     await this.ormRepository.delete({ where: { id } });
   }
 
-  public async like({ id, userId }: ILikePiuDTO): Promise<Piu> {
+  public async like({ id, userId }: ILikePiuDTO): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  })> {
     const piu = await this.ormRepository.update({
       where: { id },
       data: {
@@ -78,7 +101,10 @@ export default class PiusRepository implements IPiusRepository {
     return piu;
   }
 
-  public async unlike({ id, userId }: ILikePiuDTO): Promise<Piu> {
+  public async unlike({ id, userId }: ILikePiuDTO): Promise<(Piu & {
+    user: User;
+    likes: PiuLike[];
+  })> {
     const piu = await this.ormRepository.update({
       where: { id },
       data: {
